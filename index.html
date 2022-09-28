@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <head>
+      <meta charset="utf-8" />
+      <title>Pong</title>
+      <link rel="icon" type="image/x-icon" href="./public/icons8-cheese-64.png">
+    </head>
+    <style>
+      body {
+        text-align: center;
+        background-color: black;
+        margin: 0;
+        overflow: hidden;
+        font-size: 30px;
+        color: white;
+      }
+    </style>
+  </head>
+  <body>
+    <canvas id="canvas"></canvas>
+    <div id="score" style="position:absolute;top:60px;left:0px;right:0px;">Player 1: WS keys<br>Player 2: Arrow Keys</div>
+    <div id="start" style="position:absolute;top:200px;left:0px;right:0px;">Click to Start</div>
+    <script type="module">
+        import init, {Game} from "./pkg/pong.js";
+
+        let canvas = document.getElementById("canvas");
+        let ctx = canvas.getContext("2d");
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        window.draw_rectangle = (x, y, w, h, color) => {
+            ctx.fillStyle = color;
+            ctx.fillRect(x, y, w, h);
+        };
+
+        window.set_score_text = (text) => {
+            document.getElementById("score").innerText = text;
+        };
+
+        init().then(() => {
+            let game = Game.new(canvas.width, canvas.height);
+            window.addEventListener("keydown", (e) => game.handle_keydown(e.code));
+            window.addEventListener("keyup", (e) => game.handle_keyup(e.code));
+            window.addEventListener("click", () => {
+                document.getElementById("start").hidden = true;
+                game.start();
+            });
+            (function animation_loop() {
+                game.draw_animation_frame();
+                requestAnimationFrame(animation_loop);
+            })();
+
+            window.setInterval(() => game.do_physics(), 10);
+        });
+    </script>
+  </body>
+</html>
